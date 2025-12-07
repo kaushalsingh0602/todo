@@ -1,45 +1,40 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import './firebaseConfig';// 🔥 Must be first
+import React, { useEffect } from "react";
+import { Provider } from "react-redux";
+import {  Text } from "react-native";
+import AppNavigator from "./src/navigation/AppNavigator";
+import store from "./src/store";
+// import firestore from '@react-native-firebase/firestore';
+ import database from '@react-native-firebase/database';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+const App = () => {
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+
+
+useEffect(() => {
+  const ref = database().ref('test');
+  ref
+    .set({ msg: 'hello world' })
+    .then(() => console.log('Data written!'))
+    .catch(err => console.log('RTDB Error:', err));
+
+  ref
+    .once('value')
+    .then(snapshot => console.log('Snapshot:', snapshot.val()))
+    .catch(err => console.log('RTDB Error:', err));
+}, []);
+
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
-    </SafeAreaProvider>
+    <Provider store={store}>
+      {/* Optional: wrap your navigator in SafeAreaView */}
+      {/* <SafeAreaView style={{ flex: 1 }}> */}
+        {/* <NavigationContainer> */}
+        <AppNavigator />
+        {/* </NavigationContainer> */}
+      {/* </SafeAreaView> */}
+    </Provider>
   );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
+};
 
 export default App;
